@@ -3,7 +3,7 @@ A FASTJavaCFGVisitorTest is a test class for testing the behavior of FASTJavaCFG
 "
 Class {
 	#name : 'FASTJavaCFGVisitorTest',
-	#superclass : 'TestCase',
+	#superclass : 'FASTJavaAbstractVisitorTest',
 	#instVars : [
 		'cfgBuilder'
 	],
@@ -117,13 +117,6 @@ FASTJavaCFGVisitorTest >> forMethodSource [
 	}
 	return true;
 }'
-]
-
-{ #category : 'as yet unclassified' }
-FASTJavaCFGVisitorTest >> getFASTMethodEntityForSource: sourceCode [
-
-	^ (JavaSmaCCProgramNodeImporterVisitor new parseCodeMethodString:
-		  sourceCode) allFASTJavaMethodEntity first
 ]
 
 { #category : 'as yet unclassified' }

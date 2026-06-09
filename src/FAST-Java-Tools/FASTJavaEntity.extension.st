@@ -17,3 +17,11 @@ FASTJavaEntity >> newStatementBlockForCFG [
 
 	^ FASTJavaStatementBlock new
 ]
+
+{ #category : '*FAST-Java-Tools' }
+FASTJavaEntity >> newVersionNumber [
+
+	^self activeVersion
+		ifNil: [ 0 ]
+		ifNotNil: [ :active | active version + 1 ]
+]
