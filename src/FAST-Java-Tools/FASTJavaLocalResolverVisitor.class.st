@@ -20,6 +20,20 @@ FASTJavaLocalResolverVisitor >> on: aFASTBehaviouralEntity [
 	aFASTBehaviouralEntity accept: self
 ]
 
+{ #category : 'generated' }
+FASTJavaLocalResolverVisitor >> visitFASTJavaForEachStatement: aFASTJavaForEachStatement [
+
+	"using the identifier as if it was a variable declaration, which is somewhat the case"
+	scoper
+		scopeAdd: aFASTJavaForEachStatement fieldname name
+		declaration: aFASTJavaForEachStatement fieldname.
+	aFASTJavaForEachStatement fieldname localDeclaration:
+		aFASTJavaForEachStatement fieldname.
+	
+	aFASTJavaForEachStatement list accept: self.
+	aFASTJavaForEachStatement body accept: self
+]
+
 { #category : 'visiting' }
 FASTJavaLocalResolverVisitor >> visitFASTJavaForStatement: aFASTJavaForStatement [
 
@@ -49,8 +63,12 @@ FASTJavaLocalResolverVisitor >> visitFASTJavaVariableDeclarator: aFASTJavaVariab
 		scopeAdd: aFASTJavaVariableDeclarator variable name
 		declaration: aFASTJavaVariableDeclarator.
 
-	aFASTJavaVariableDeclarator variable localDeclaration: aFASTJavaVariableDeclarator.
+	aFASTJavaVariableDeclarator variable localDeclaration:
+		aFASTJavaVariableDeclarator.
 
+	"visiting the expression in case it accesses another variable"
+	aFASTJavaVariableDeclarator expression ifNotNil: [
+		aFASTJavaVariableDeclarator expression accept: self ]
 ]
 
 { #category : 'visiting' }

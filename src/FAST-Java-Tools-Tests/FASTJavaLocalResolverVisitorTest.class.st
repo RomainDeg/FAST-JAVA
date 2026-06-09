@@ -1,6 +1,6 @@
 Class {
 	#name : 'FASTJavaLocalResolverVisitorTest',
-	#superclass : 'TestCase',
+	#superclass : 'FASTJavaAbstractVisitorTest',
 	#instVars : [
 		'localResolver',
 		'builder'
@@ -16,6 +16,30 @@ FASTJavaLocalResolverVisitorTest >> setUp [
 	
 	builder := FASTJavaTestNodeBuilder new.
 	localResolver := FASTJavaLocalResolverVisitor new
+]
+
+{ #category : 'tests' }
+FASTJavaLocalResolverVisitorTest >> testBindAccessedVariableToDeclaration [
+	| varAccess body ast source |
+	
+	source := 'public void something() { 
+		int x = 5;
+		int y = x;
+	}'.
+	ast := self getFASTMethodEntityForSource: source.
+
+	localResolver on: ast.
+
+	body := ast statementBlock statements.
+	varAccess := body second declarators first variable.
+	self deny: varAccess localDeclaration isNonLocalDeclaration.
+	self assert: varAccess localDeclaration variable name equals: 'y'.
+	
+	varAccess := body second declarators first expression.
+	self assert: varAccess localDeclaration variable name equals: 'x'.
+	self assert: varAccess localDeclaration equals: body first declarators first.
+	
+	self assert: body first declarators first localUses size equals: 1
 ]
 
 { #category : 'tests' }
@@ -55,6 +79,36 @@ FASTJavaLocalResolverVisitorTest >> testBindToDeclaration [
 	self assert: varAccess localDeclaration equals: body first declarators first.
 
 	self assert: body first declarators first localUses size equals: 1
+]
+
+{ #category : 'tests' }
+FASTJavaLocalResolverVisitorTest >> testBindToForEachLoopIdentifier [
+	| source varAccess loop ast |
+
+	source := 'public void forEachMethod(ArrayList<Integer> list) {
+	for (Integer i : list) {
+  		System.out.println(i);
+	}
+}'.
+	ast := self getFASTMethodEntityForSource: source.
+
+	localResolver on: ast.
+
+	loop := ast statementBlock statements first.
+	
+	varAccess := loop list.
+	self deny: varAccess localDeclaration isNonLocalDeclaration.
+	self assert: varAccess localDeclaration variable name equals: 'list'.
+	self assert: varAccess localDeclaration equals: ast parameters anyOne.
+
+	self assert: loop fieldname localUses size equals: 1.
+
+	varAccess := loop body statements first expression arguments anyOne.
+	self deny: varAccess localDeclaration isNonLocalDeclaration.
+	self assert: varAccess localDeclaration name equals: 'i'.
+	self assert: varAccess localDeclaration equals: loop fieldname.
+
+	self assert: loop fieldname localUses size equals: 1
 ]
 
 { #category : 'tests' }
