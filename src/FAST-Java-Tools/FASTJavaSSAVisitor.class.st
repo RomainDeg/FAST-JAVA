@@ -1,6 +1,8 @@
 Class {
 	#name : 'FASTJavaSSAVisitor',
 	#superclass : 'FASTJavaVisitor',
+	#traits : 'FASTJavaTVisitor',
+	#classTraits : 'FASTJavaTVisitor classTrait',
 	#instVars : [
 		'variableVersions',
 		'isBeingAssigned'
